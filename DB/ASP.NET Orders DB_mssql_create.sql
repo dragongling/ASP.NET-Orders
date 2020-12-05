@@ -1,0 +1,48 @@
+CREATE TABLE [Order] (
+	Id int NOT NULL,
+	Number nvarchar(max) NOT NULL UNIQUE,
+	Date datetime2(7) NOT NULL,
+	ProviderId int NOT NULL,
+  CONSTRAINT [PK_ORDER] PRIMARY KEY CLUSTERED
+  (
+  [Id] ASC
+  ) WITH (IGNORE_DUP_KEY = OFF)
+
+)
+GO
+CREATE TABLE [Provider] (
+	Id int NOT NULL,
+	Name nvarchar(max) NOT NULL,
+  CONSTRAINT [PK_PROVIDER] PRIMARY KEY CLUSTERED
+  (
+  [Id] ASC
+  ) WITH (IGNORE_DUP_KEY = OFF)
+
+)
+GO
+CREATE TABLE [OrderItem] (
+	Id int NOT NULL,
+	OrderId int NOT NULL,
+	Name nvarchar(max) NOT NULL,
+	Quantity decimal(18, 3) NOT NULL,
+	Unit nvarchar(max) NOT NULL,
+  CONSTRAINT [PK_ORDERITEM] PRIMARY KEY CLUSTERED
+  (
+  [Id] ASC
+  ) WITH (IGNORE_DUP_KEY = OFF)
+
+)
+GO
+ALTER TABLE [Order] WITH CHECK ADD CONSTRAINT [Order_fk0] FOREIGN KEY ([ProviderId]) REFERENCES [Provider]([Id])
+ON UPDATE CASCADE
+GO
+ALTER TABLE [Order] CHECK CONSTRAINT [Order_fk0]
+GO
+
+
+ALTER TABLE [OrderItem] WITH CHECK ADD CONSTRAINT [OrderItem_fk0] FOREIGN KEY ([OrderId]) REFERENCES [Order]([Id])
+ON UPDATE CASCADE
+GO
+ALTER TABLE [OrderItem] CHECK CONSTRAINT [OrderItem_fk0]
+GO
+
