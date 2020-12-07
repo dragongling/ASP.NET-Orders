@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 
-namespace ASP.NET_Orders
+namespace Orders
 {
     public class MvcApplication : System.Web.HttpApplication
     {

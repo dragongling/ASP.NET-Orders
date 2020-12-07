@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace ASP.NET_Orders.Controllers
+namespace Orders.Controllers
 {
     public class HomeController : Controller
     {

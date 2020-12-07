@@ -1,7 +1,7 @@
 ﻿using System.Web;
 using System.Web.Optimization;
 
-namespace ASP.NET_Orders
+namespace Orders
 {
     public class BundleConfig
     {
