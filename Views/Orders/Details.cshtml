@@ -33,6 +33,9 @@
         <dd>
             @Html.DisplayFor(model => model.Date)
         </dd>
+        <dt>
+            Элементы
+        </dt>
         <dd>
             <table class="table">
                 <tr>
@@ -42,17 +45,17 @@
                 </tr>
                 @foreach (var item in Model.OrderItems)
                 {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Quantity)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Unit)
-                </td>
-            </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Quantity)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Unit)
+                        </td>
+                    </tr>
                 }
             </table>
         </dd>
@@ -60,5 +63,6 @@
 </div>
 <p>
     @Html.ActionLink("Редактировать", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Удалить", "Delete", new { id = Model.Id }) |
     @Html.ActionLink("Назад к списку", "Index")
 </p>

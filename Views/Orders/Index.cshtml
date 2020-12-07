@@ -7,7 +7,7 @@
 <h2>Заказы</h2>
 
 <p>
-    @Html.ActionLink("Создать заказ", "Create")
+    <input type="button" value="Создать заказ" onclick="location.href='@Url.Action("Create", "Orders")'" class="btn btn-default" />
 </p>
 <table class="table">
     <tr>
