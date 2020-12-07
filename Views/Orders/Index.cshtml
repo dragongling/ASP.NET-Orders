@@ -24,7 +24,7 @@
     </tr>
 
 @foreach (var item in Model) {
-    <tr>
+    <tr class='clickable-row' data-href='@Url.Action("Details", "Orders", new { id = item.Id })'>
         <td>
             @Html.DisplayFor(modelItem => item.Provider.Name)
         </td>
@@ -36,10 +36,28 @@
         </td>
         <td>
             @Html.ActionLink("Редактировать", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Подробности", "Details", new { id=item.Id }) |
             @Html.ActionLink("Удалить", "Delete", new { id=item.Id })
         </td>
     </tr>
 }
 
 </table>
+
+@section Scripts{ 
+    <script>
+        $(function () {
+            $('.table tr[data-href]').each(function () {
+                $(this).css('cursor', 'pointer').hover(
+                    function () {
+                        $(this).addClass('active');
+                    },
+                    function () {
+                        $(this).removeClass('active');
+                    }).click(function () {
+                        document.location = $(this).attr('data-href');
+                    }
+                    );
+            });
+        });
+    </script>
+}
