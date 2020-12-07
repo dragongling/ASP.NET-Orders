@@ -16,7 +16,6 @@ namespace Orders.Models
         public string Name { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(18, 3)")]
         public decimal Quantity { get; set; }
         public string Unit { get; set; }
 
