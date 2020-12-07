@@ -33,10 +33,32 @@
         <dd>
             @Html.DisplayFor(model => model.Date)
         </dd>
-
+        <dd>
+            <table class="table">
+                <tr>
+                    <th>Наименование</th>
+                    <th>Количество</th>
+                    <th>Единица измерения</th>
+                </tr>
+                @foreach (var item in Model.OrderItems)
+                {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Unit)
+                </td>
+            </tr>
+                }
+            </table>
+        </dd>
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Редактировать", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Назад к списку", "Index")
 </p>

@@ -13,11 +13,16 @@ namespace Orders.Models
         public int Id { get; set; }
 
         [Required]
+        [Display(Name = "Номер")]
         public string Number { get; set; }
 
         [Required]
+        [Display(Name = "Дата")]
+        [DataType(DataType.Date)]
         [Column(TypeName = "datetime2")]
         public DateTime Date { get; set; }
+
+        [Display(Name = "Поставщик")]
         public int ProviderId { get; set; }
 
         public virtual Provider Provider { get; set; }

@@ -13,10 +13,15 @@ namespace Orders.Models
         public int OrderId { get; set; }
 
         [Required]
+        [Display(Name = "Наименование")]
         public string Name { get; set; }
 
+
         [Required]
+        [Display(Name = "Количество")]
         public decimal Quantity { get; set; }
+
+        [Display(Name = "Единица измерения")]
         public string Unit { get; set; }
 
         public virtual Order Order { get; set; }

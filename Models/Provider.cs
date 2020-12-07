@@ -11,6 +11,7 @@ namespace Orders.Models
         public int Id { get; set; }
 
         [Required]
+        [Display(Name = "Поставщик")]
         public string Name { get; set; }
     }
 }
