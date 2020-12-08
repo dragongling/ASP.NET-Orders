@@ -16,9 +16,37 @@ namespace Orders.Controllers
         private OrdersContext db = new OrdersContext();
 
         // GET: Orders
-        public ActionResult Index()
+        public ActionResult Index(string number, string date, string itemName, string unit, string provider)
         {
             var orders = db.Orders.Include(o => o.Provider);
+
+            ViewBag.NumberFilter = new SelectList((from c in db.Orders select c.Number).Distinct());
+            ViewBag.DateFilter = new SelectList((from c in db.Orders select c.Date).Distinct());
+            ViewBag.ItemNameFilter = new SelectList((from c in db.OrderItems select c.Name).Distinct());
+            ViewBag.UnitFilter = new SelectList((from c in db.OrderItems select c.Unit).Distinct());
+            ViewBag.ProviderFilter = new SelectList((from c in db.Providers select c.Name).Distinct());
+
+            if (!string.IsNullOrEmpty(number))
+            {
+                orders = orders.Where(s => s.Number.Equals(number));
+            }
+            if (!string.IsNullOrEmpty(date))
+            {
+                DateTime fdate = DateTime.Parse(date);
+                orders = orders.Where(s => s.Date.Equals(fdate));
+            }
+            if (!string.IsNullOrEmpty(provider))
+            {
+                orders = orders.Where(s => s.Provider.Name.Equals(provider));
+            }
+            if (!string.IsNullOrEmpty(itemName))
+            {
+                orders = orders.Where(s => s.OrderItems.Any(p => p.Name.Equals(itemName)));
+            }
+            if (!string.IsNullOrEmpty(unit))
+            {
+                orders = orders.Where(s => s.OrderItems.Any(p => p.Unit.Equals(unit)));
+            }
             return View(orders.ToList());
         }
 
@@ -119,6 +147,34 @@ namespace Orders.Controllers
             db.Orders.Remove(order);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public JsonResult InsertOrderItem(OrderItem newItem)
+        {
+            db.OrderItems.Add(newItem);
+            db.SaveChanges();
+            return Json(newItem);
+        }
+
+        [HttpPost]
+        public ActionResult UpdateOrderItem(OrderItem newItem)
+        {
+            OrderItem oldItem = (from c in db.OrderItems where c.Id == newItem.Id select c).FirstOrDefault();
+            oldItem.Name = newItem.Name;
+            oldItem.Quantity = newItem.Quantity;
+            oldItem.Unit = newItem.Unit;
+            db.SaveChanges();
+            return new EmptyResult();
+        }
+
+        [HttpPost]
+        public ActionResult DeleteOrderItem(int itemId)
+        {
+            OrderItem itemToRemove = (from c in db.OrderItems where c.Id == itemId select c).FirstOrDefault();
+            db.OrderItems.Remove(itemToRemove);
+            db.SaveChanges();
+            return new EmptyResult();
         }
 
         protected override void Dispose(bool disposing)

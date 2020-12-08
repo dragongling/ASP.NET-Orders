@@ -9,6 +9,15 @@
 <p>
     <input type="button" value="Создать заказ" onclick="location.href='@Url.Action("Create", "Orders")'" class="btn btn-default" />
 </p>
+@using (Html.BeginForm("Index", "Orders", FormMethod.Get))
+{
+    @Html.ListBox("number", ViewBag.NumberFilter as MultiSelectList)
+    @Html.ListBox("date", ViewBag.DateFilter as MultiSelectList)
+    @Html.ListBox("itemName", ViewBag.ItemNameFilter as MultiSelectList)
+    @Html.ListBox("unit", ViewBag.UnitFilter as MultiSelectList)
+    @Html.ListBox("provider", ViewBag.ProviderFilter as MultiSelectList)
+    <input class="btn btn-default" type="submit" value="Фильтровать" />
+}
 <table class="table">
     <tr>
         <th>
@@ -23,27 +32,28 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr class='clickable-row' data-href='@Url.Action("Details", "Orders", new { id = item.Id })'>
-        <td>
-            @Html.DisplayFor(modelItem => item.Provider.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Number)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Date)
-        </td>
-        <td>
-            @Html.ActionLink("Редактировать", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Удалить", "Delete", new { id=item.Id })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr class='clickable-row' data-href='@Url.Action("Details", "Orders", new { id = item.Id })'>
+            <td>
+                @Html.DisplayFor(modelItem => item.Provider.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Number)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.ActionLink("Редактировать", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Удалить", "Delete", new { id = item.Id })
+            </td>
+        </tr>
+    }
 
 </table>
 
-@section Scripts{ 
+@section Scripts{
     <script>
         $(function () {
             $('.table tr[data-href]').each(function () {
