@@ -51,7 +51,7 @@
                 </tr>
                 @foreach (var item in Model.OrderItems)
                 {
-                    <tr>
+                    <tr data-id="@item.Id">
                         <td class="Name">
                             <span>@Html.DisplayFor(modelItem => item.Name) </span>
                             <input type="text" value="@item.Name" style="display:none" />
@@ -72,12 +72,8 @@
                         </td>
                     </tr>
                 }
-                <tr id="btnAddRow">
-                    <td>
-                        <input type="button" class="btn btn-default" id="btnAdd" value="Добавить" />
-                    </td>
-                </tr>
             </table>
+            <input type="button" class="btn btn-default" id="btnAddRow" value="Добавить" />
         </div>
     </div>
 
@@ -98,43 +94,79 @@
 
 <script type="text/javascript">
     function AppendRow(row, name, quantity, unit) {
-
             $(".Name", row).find("span").html(name);
             $(".Name", row).find("input").val(name);
 
             $(".Quantity", row).find("span").html(quantity);
-            $(".Quantity", row).find("input").val(quantity);
+        $(".Quantity", row).find("input").val(quantity);
+
+        $(".Unit", row).find("span").html(unit);
+        $(".Unit", row).find("input").val(unit);
 
             row.find(".Edit").show();
             row.find(".Delete").show();
 
             $("#tblOrderItems").append(row);
-        };
+    };
 
-    //Add event handler.
-        $("body").on("click", "#btnAdd", function () {
-            var txtName = $("#txtName");
-            var txtCountry = $("#txtCountry");
-            $.ajax({
+    $("body").on("click", "#btnAddRow", function () {
+        $('#tblOrderItems > tbody:last-child').append(`
+    <tr><td class="Name">
+                            <span style="display:none"></span>
+                            <input type="text"/>
+                        </td>
+                        <td class="Quantity">
+                            <span style="display:none"></span>
+                            <input type="text" />
+                        </td>
+                        <td class="Unit">
+                            <span style="display:none"></span>
+                            <input type="text" />
+                        </td>
+                        <td>
+                            <a class="Add" href="javascript:;">Добавить</a>
+                            <a class="CancelAddRow" href="javascript:;">Отмена</a>
+                        </td></tr>`);
+    });
+
+    $("body").on("click", "#tblOrderItems .Add", function () {
+        var row = $(this).closest("tr");
+        var orderItem = {};
+        orderItem.orderId = @Model.Id;
+        orderItem.name = row.find(".Name input").val();
+        orderItem.quantity = row.find(".Quantity input").val();
+        orderItem.unit = row.find(".Unit input").val();
+        $.ajax({
                 type: "POST",
-                url: "/Home/InsertCustomer",
-                data: '{name: "' + txtName.val() + '", country: "' + txtCountry.val() + '" }',
+            url: "/Orders/InsertOrderItem",
+            data: JSON.stringify(orderItem),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-                success: function (r) {
-                    var row = $("#tblCustomers tr:last-child");
-                    if ($("#tblCustomers tr:last-child span").eq(0).html() != "&nbsp;") {
-                        row = row.clone();
-                    }
-                    AppendRow(row, r.CustomerId, r.Name, r.Country);
-                    txtName.val("");
-                    txtCountry.val("");
+            success: function (r) {
+                console.log(r);
+                row.find("input").hide();
+                row.find("span").show();
+                row.find(".Add").remove();
+                row.find(".CancelAddRow").remove();
+
+                row.find(".Name span").text(orderItem.name);
+                row.find(".Quantity span").text(orderItem.quantity);
+                row.find(".Unit span").text(orderItem.unit);
+
+                row.attr("data-id", r.Id);
+                var buttonTd = row.find("td:last-child");
+                buttonTd.append(`
+                            <a class="Edit" href="javascript:;">Редактировать</a>
+                            <a class="Update" href="javascript:;" style="display:none">Обновить</a>
+                            <a class="Cancel" href="javascript:;" style="display:none">Отмена</a>
+                            <a class="Delete" href="javascript:;">Удалить</a>
+                `);
                 }
             });
-        });
+    });
 
         //Edit event handler.
-        $("body").on("click", "#tblCustomers .Edit", function () {
+        $("body").on("click", "#tblOrderItems .Edit", function () {
             var row = $(this).closest("tr");
             $("td", row).each(function () {
                 if ($(this).find("input").length > 0) {
@@ -149,37 +181,44 @@
         });
 
         //Update event handler.
-        $("body").on("click", "#tblCustomers .Update", function () {
+        $("body").on("click", "#tblOrderItems .Update", function () {
             var row = $(this).closest("tr");
-            $("td", row).each(function () {
-                if ($(this).find("input").length > 0) {
-                    var span = $(this).find("span");
-                    var input = $(this).find("input");
-                    span.html(input.val());
-                    span.show();
-                    input.hide();
-                }
-            });
+            var orderItem = {};
+            orderItem.Id = row.attr("data-id");
+            orderItem.orderId = @Model.Id;
+            orderItem.name = row.find(".Name input").val();
+            orderItem.quantity = row.find(".Quantity input").val();
+            orderItem.unit = row.find(".Unit input").val();
+
             row.find(".Edit").show();
             row.find(".Delete").show();
             row.find(".Cancel").hide();
             $(this).hide();
 
-            var customer = {};
-            customer.CustomerId = row.find(".CustomerId").find("span").html();
-            customer.Name = row.find(".Name").find("span").html();
-            customer.Country = row.find(".Country").find("span").html();
+            row.find(".Name span").text(orderItem.name);
+            row.find(".Quantity span").text(orderItem.quantity);
+            row.find(".Unit span").text(orderItem.unit);
+            $("td", row).each(function () {
+                if ($(this).find("input").length > 0) {
+                    $(this).find("input").hide();
+                    $(this).find("span").show();
+                }
+            });
+
             $.ajax({
                 type: "POST",
-                url: "/Home/UpdateCustomer",
-                data: '{customer:' + JSON.stringify(customer) + '}',
+                url: "/Orders/UpdateOrderItem",
+                data: JSON.stringify(orderItem),
                 contentType: "application/json; charset=utf-8",
-                dataType: "json"
+                dataType: "json",
+                success: function (r) {
+                    console.log(r);
+                }
             });
         });
 
         //Cancel event handler.
-        $("body").on("click", "#tblCustomers .Cancel", function () {
+        $("body").on("click", "#tblOrderItems .Cancel", function () {
             var row = $(this).closest("tr");
             $("td", row).each(function () {
                 if ($(this).find("input").length > 0) {
@@ -196,24 +235,31 @@
             $(this).hide();
         });
 
+    $("body").on("click", "#tblOrderItems .CancelAddRow", function () {
+        var row = $(this).closest("tr");
+        row.remove();
+    });
+
         //Delete event handler.
-        $("body").on("click", "#tblCustomers .Delete", function () {
-            if (confirm("Do you want to delete this row?")) {
+        $("body").on("click", "#tblOrderItems .Delete", function () {
+            if (confirm("Вы действительно хотите удалить эту строку?")) {
                 var row = $(this).closest("tr");
-                var customerId = row.find("span").html();
+                var id = row.attr("data-id");
                 $.ajax({
                     type: "POST",
-                    url: "/Home/DeleteCustomer",
-                    data: '{customerId: ' + customerId + '}',
+                    url: "/Orders/DeleteOrderItem",
+                    data: '{itemId: ' + id + '}',
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function (response) {
-                        if ($("#tblCustomers tr").length > 2) {
+                        console.log(response);
+                        console.log(row);
+                        row.remove();
+                    },
+                    error: function (response) {
+                        console.log(response);
+                        if (response.status == 200) {
                             row.remove();
-                        } else {
-                            row.find(".Edit").hide();
-                            row.find(".Delete").hide();
-                            row.find("span").html('&nbsp;');
                         }
                     }
                 });
